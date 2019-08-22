@@ -107,6 +107,6 @@ func killAll(processes []*os.Process) {
 func main() {
 	defer common.Cleanup()
 
-	common.New(&common.App{"invoke", "1.0.3", "2017", "invokes a command to measure times", "mpetavy", common.APACHE, "https://github.com/mpetavy/invoke", false, nil,nil, nil, run, time.Duration(0)}, nil)
+	common.New(&common.App{"invoke", "1.0.3", "2017", "invokes a command to measure times", "mpetavy", common.APACHE, "https://github.com/mpetavy/invoke", false, nil, nil, run, time.Duration(0)}, nil)
 	common.Run()
 }
