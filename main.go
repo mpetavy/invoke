@@ -27,8 +27,9 @@ func run() error {
 
 	if flag.NArg() == 0 {
 		_, err := fmt.Fprintf(os.Stdout, "Please provide a custom command to invoke. Sample: invoke -n 3 cmd /c echo Hello world")
-		common.Error(err)
-		common.Exit(0)
+		if common.Error(err) {
+			return err
+		}
 	}
 
 	args := os.Args[len(os.Args)-flag.NArg():]
@@ -111,7 +112,5 @@ func killAll(processes []*os.Process) {
 }
 
 func main() {
-	defer common.Done()
-
 	common.Run(nil)
 }
