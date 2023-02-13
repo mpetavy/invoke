@@ -17,7 +17,7 @@ var (
 )
 
 func init() {
-	common.Init("1.0.3", "", "", "2017", "invokes a command to measure times", "mpetavy", fmt.Sprintf("https://github.com/mpetavy/%s", common.Title()), common.APACHE, nil, nil, nil, run, 0)
+	common.Init("invoke", "1.0.3", "", "", "2017", "invokes a command to measure times", "mpetavy", fmt.Sprintf("https://github.com/mpetavy/%s", common.Title()), common.APACHE, nil, nil, nil, run, 0)
 
 	amount = flag.Int("n", 1, "amount of parallel invocations")
 	timeout = flag.Int("t", 0, "timeout before terminate command (ms)")
