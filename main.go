@@ -84,7 +84,7 @@ func run() error {
 		fmt.Printf("Wait %v to terminate processes...\n", d)
 		fmt.Println()
 
-		time.Sleep(d)
+		common.Sleep(d)
 
 		killAll(processes)
 	} else {
