@@ -97,14 +97,21 @@ func main() {
 
 		killAll(processes)
 	} else {
+		code := -1
 		for _, process := range processes {
-			_, err := process.Wait()
+			state, err := process.Wait()
 			if err != nil {
 				Error(err)
+			}
+
+			if code == -1 {
+				code = state.ExitCode()
 			}
 		}
 
 		fmt.Printf("%s\n", strings.Repeat("-", 80))
 		fmt.Printf("Invoke measured time: %s\n", time.Since(start))
+
+		os.Exit(code)
 	}
 }
