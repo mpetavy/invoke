@@ -6,30 +6,37 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
-
-	"github.com/mpetavy/common"
 )
 
 var (
-	amount  *int
-	timeout *int
+	amount  = flag.Int("n", 1, "amount of parallel invocations")
+	timeout = flag.Int("t", 0, "timeout before terminate command (ms)")
 )
 
-func init() {
-	common.Init("invoke", "", "", "", "2017", "invokes a command to measure times", "mpetavy", fmt.Sprintf("https://github.com/mpetavy/%s", common.Title()), common.APACHE, nil, nil, nil, run, 0)
+func Error(err error) bool {
+	if err != nil {
+		fmt.Fprint(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 
-	amount = flag.Int("n", 1, "amount of parallel invocations")
-	timeout = flag.Int("t", 0, "timeout before terminate command (ms)")
+	return err != nil
 }
 
-func run() error {
+func killAll(processes []*os.Process) {
+	for _, process := range processes {
+		fmt.Printf("Kill process with PID %d\n", process.Pid)
+
+		Error(process.Signal(os.Kill))
+	}
+}
+
+func main() {
+	flag.Parse()
 
 	if flag.NArg() == 0 {
-		_, err := fmt.Fprintf(os.Stdout, "Please provide a custom command to invoke. Sample: invoke -n 3 cmd /c echo Hello world")
-		if common.Error(err) {
-			return err
-		}
+		Error(fmt.Errorf("Please provide a custom command to invoke. Sample: invoke -n 3 cmd /c echo Hello world"))
 	}
 
 	args := os.Args[len(os.Args)-flag.NArg():]
@@ -63,7 +70,7 @@ func run() error {
 
 		err := cmd.Start()
 		if err != nil {
-			panic(err)
+			Error(err)
 		}
 
 		fmt.Printf("Started process with PID %d\n", cmd.Process.Pid)
@@ -80,37 +87,24 @@ func run() error {
 	if *timeout > 0 {
 		d := time.Duration(*timeout) * time.Millisecond
 
-		fmt.Println()
-		fmt.Printf("Wait %v to terminate processes...\n", d)
-		fmt.Println()
+		fmt.Printf("Wait max %v before terminate the processes...\n", d)
+		fmt.Printf("%s\n", strings.Repeat("-", 80))
 
-		common.Sleep(d)
+		time.Sleep(d)
+
+		fmt.Printf("%s\n", strings.Repeat("-", 80))
+		fmt.Printf("Terminate all processes\n")
 
 		killAll(processes)
 	} else {
-		fmt.Printf("Wait for processes to terminate...\n")
-
 		for _, process := range processes {
 			_, err := process.Wait()
-			if common.Error(err) {
-				return err
+			if err != nil {
+				Error(err)
 			}
 		}
 
-		fmt.Printf("\nInvoke measured time: %s\n", time.Since(start))
+		fmt.Printf("%s\n", strings.Repeat("-", 80))
+		fmt.Printf("Invoke measured time: %s\n", time.Since(start))
 	}
-
-	return nil
-}
-
-func killAll(processes []*os.Process) {
-	for _, process := range processes {
-		fmt.Printf("Kill process with PID %d\n", process.Pid)
-
-		common.Error(process.Signal(os.Kill))
-	}
-}
-
-func main() {
-	common.Run(nil)
 }
