@@ -87,7 +87,7 @@ func main() {
 	if *timeout > 0 {
 		d := time.Duration(*timeout) * time.Millisecond
 
-		fmt.Printf("Wait max %v before terminate the processes...\n", d)
+		fmt.Printf("Wait max %v before terminating the processes...\n", d)
 		fmt.Printf("%s\n", strings.Repeat("-", 80))
 
 		time.Sleep(d)
